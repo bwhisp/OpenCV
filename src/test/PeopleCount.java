@@ -94,6 +94,7 @@ final class PeopleCount {
 		final Point rectPoint2 = new Point();
 		final Point fontPoint = new Point(24, 24);
 
+		
 		// Preliminaries for faces detection
 		CascadeClassifier faceDetector = new CascadeClassifier(
 				"/home/bwhisp/Resource/haarcascade.xml");
@@ -129,23 +130,18 @@ final class PeopleCount {
 
 				List<Double> weightList = foundWeights.toList();
 				List<Rect> rectList = foundPersons.toList();
-				int i = 0;
 
-				// for (Rect rect : rectList) { // Draws rectangles around
-				// people
-				// if (PeopleTrack.isNewPerson(rect, previousDetections))
-				//
-				// Imgproc.putText(mat,
-				// String.format("People counted : %d", soldePersons),
-				// fontPoint, Core.FONT_HERSHEY_PLAIN, 1.5, fontColor,
-				// 2, Core.LINE_AA, false);
-				// // CHECKSTYLE:ON MagicNumber
-				// i++;
-				// }
+				for (Rect rect : rectList) { // Draws rectangles around people
+					rectPoint1.x = rect.x;
+					rectPoint1.y = rect.y;
+					rectPoint2.x = rect.x + rect.width;
+					rectPoint2.y = rect.y + rect.height;
+					// Draw rectangle around fond object
+					Imgproc.rectangle(mat, rectPoint1, rectPoint2, rectColor, 2);
+					// CHECKSTYLE:ON MagicNumber
+				}
 				soldePersons += PeopleTrack.countNewPersons(foundPersons,
-						previousDetections);
-
-				
+						previousDetections, foundFaces);
 
 				for (Rect rect : foundFaces.toArray()) {
 					// Draw rectangles around faces
@@ -161,13 +157,11 @@ final class PeopleCount {
 				// framesNoPeople++;
 			}
 
-			
-			
 			Imgproc.putText(mat,
 					String.format("People counted : %d", soldePersons),
 					fontPoint, Core.FONT_HERSHEY_PLAIN, 0.8, fontColor, 2,
 					Core.LINE_AA, false);
-			
+
 			previousDetections.queue(new MatOfRect(foundPersons));
 			videoWriter.write(mat);
 		}
