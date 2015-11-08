@@ -9,19 +9,19 @@ import org.opencv.core.Size;
 import org.opencv.core.Point;
 
 class PeopleTrack {
-	
-	public static int countNewPersons(MatOfRect currentDetection, HeapList<MatOfRect> previousDetections) {
+
+	public static int countNewPersons(MatOfRect currentDetection,
+			HeapList<MatOfRect> previousDetections) {
 		int counter = 0;
-		
-		for (Rect person : currentDetection.toList()){
-			if (isNewPerson(person, previousDetections)){
+
+		for (Rect person : currentDetection.toList()) {
+			if (isNewPerson(person, previousDetections)) {
 				counter++;
 			}
 		}
-		
+
 		return counter;
 	}
-	
 
 	public static boolean isNewPerson(Rect person,
 			HeapList<MatOfRect> previousDetections) {
@@ -29,7 +29,7 @@ class PeopleTrack {
 		for (MatOfRect selectedDetection : previousDetections) {
 			List<Rect> rectList = selectedDetection.toList();
 			for (Rect previousPerson : rectList) {
-				if (isNear(person, previousPerson, 0.2)) {
+				if (isNear(person, previousPerson, 0.5)) {
 					return false;
 				}
 			}
@@ -45,13 +45,14 @@ class PeopleTrack {
 				+ previousPerson.width / 2, previousPerson.y
 				+ previousPerson.height / 2);
 
-		double distance = Math.sqrt(Math.pow(previousCenter.x - personCenter.x,
-				2) + Math.pow(previousCenter.y - personCenter.y, 2));
-		double maxAllowed = Math.sqrt(Math.pow(ratio, 2)
-				* (Math.pow(person.width + previousPerson.width, 2) + Math.pow(
-						person.height + previousPerson.height, 2)));
+		Point maxAllowed = new Point(ratio
+				* (person.width + previousPerson.width) / 2, ratio
+				* (person.height + previousPerson.height) / 2);
+		
+		Point movement = new Point(previousCenter.x - personCenter.x,
+				previousCenter.y - personCenter.y);
 
-		if (distance < maxAllowed) {
+		if (movement.x < maxAllowed.x && movement.y < maxAllowed.y) {
 			return true;
 		}
 

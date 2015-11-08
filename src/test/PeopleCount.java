@@ -92,7 +92,7 @@ final class PeopleCount {
 		final Size padding = new Size(32, 32);
 		final Point rectPoint1 = new Point();
 		final Point rectPoint2 = new Point();
-		final Point fontPoint = new Point(0,0);
+		final Point fontPoint = new Point(24, 24);
 
 		// Preliminaries for faces detection
 		CascadeClassifier faceDetector = new CascadeClassifier(
@@ -121,32 +121,31 @@ final class PeopleCount {
 			faceDetector.detectMultiScale(mat, foundFaces);
 
 			if (foundPersons.rows() > 0) {
-				
-//				if (framesNoPeople > 2) {
-//					soldePersons++;
-//				}
-//				framesNoPeople = 0;
-				
+
+				// if (framesNoPeople > 2) {
+				// soldePersons++;
+				// }
+				// framesNoPeople = 0;
+
 				List<Double> weightList = foundWeights.toList();
 				List<Rect> rectList = foundPersons.toList();
 				int i = 0;
 
-//				for (Rect rect : rectList) { // Draws rectangles around people
-//					if (PeopleTrack.isNewPerson(rect, previousDetections))
-//					
-//					Imgproc.putText(mat,
-//							String.format("People counted : %d", soldePersons),
-//							fontPoint, Core.FONT_HERSHEY_PLAIN, 1.5, fontColor,
-//							2, Core.LINE_AA, false);
-//					// CHECKSTYLE:ON MagicNumber
-//					i++;
-//				}
-				soldePersons += PeopleTrack.countNewPersons(foundPersons, previousDetections);
+				// for (Rect rect : rectList) { // Draws rectangles around
+				// people
+				// if (PeopleTrack.isNewPerson(rect, previousDetections))
+				//
+				// Imgproc.putText(mat,
+				// String.format("People counted : %d", soldePersons),
+				// fontPoint, Core.FONT_HERSHEY_PLAIN, 1.5, fontColor,
+				// 2, Core.LINE_AA, false);
+				// // CHECKSTYLE:ON MagicNumber
+				// i++;
+				// }
+				soldePersons += PeopleTrack.countNewPersons(foundPersons,
+						previousDetections);
+
 				
-				Imgproc.putText(mat,
-						String.format("People counted : %d", soldePersons),
-						fontPoint, Core.FONT_HERSHEY_PLAIN, 1.5, fontColor,
-						2, Core.LINE_AA, false);
 
 				for (Rect rect : foundFaces.toArray()) {
 					// Draw rectangles around faces
@@ -159,10 +158,17 @@ final class PeopleCount {
 				}
 
 			} else {
-//				framesNoPeople++;
+				// framesNoPeople++;
 			}
+
 			
-			previousDetections.queue(foundPersons);
+			
+			Imgproc.putText(mat,
+					String.format("People counted : %d", soldePersons),
+					fontPoint, Core.FONT_HERSHEY_PLAIN, 0.8, fontColor, 2,
+					Core.LINE_AA, false);
+			
+			previousDetections.queue(new MatOfRect(foundPersons));
 			videoWriter.write(mat);
 		}
 		// CHECKSTYLE:ON MagicNumber
